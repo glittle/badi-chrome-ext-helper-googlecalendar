@@ -6,7 +6,7 @@ var calendarSettings = {};
 var possibleParents = [
   'mbihjpcmockmpboapkcbppjkmjfajlfl', // Glen dev 1
   'egekinjjpolponbbfjimifpgfdmphomp', // published
-  'x' // Glen dev 2
+  'oaehhoopdplfmlpeiedkiobifpchilef' // Glen dev 2
 ];
 var parentExtId = '';
 

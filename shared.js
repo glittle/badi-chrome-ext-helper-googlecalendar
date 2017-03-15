@@ -74,7 +74,7 @@ String.prototype.filledWith = function () {
         //else if (testForFunc.test(token)) {
         //  try {
         //    debugger;
-        //    log('eval... ' + token);
+        //    console.log('eval... ' + token);
         //    value = eval(token.substring(1));
         //  }
         //  catch (e) {
@@ -100,7 +100,7 @@ String.prototype.filledWith = function () {
           if (_nextFilledWithEach_UsesExactMatchOnly) {
             value = '{' + token + '}';
           } else {
-            log('missing property for filledWith: ' + token);
+            console.log('missing property for filledWith: ' + token);
             //debugger;
             value = '';
           }
@@ -111,7 +111,7 @@ String.prototype.filledWith = function () {
       //REMOVE try... catch to optimize in this project... not dealing with unknown and untested input
 
       //          } catch (err) {
-      //            log('filledWithError:\n' +
+      //            console.log('filledWithError:\n' +
       //                err +
       //                '\ntoken:' +
       //                token +
@@ -120,7 +120,7 @@ String.prototype.filledWith = function () {
       //                '\ntemplate:' +
       //                input +
       //                '\nall values:\n');
-      //            log(values);
+      //            console.log(values);
       //            throw 'Error in Filled With';
       //          }
       return (typeof value == 'undefined' || value == null ? '' : ('' + value));
@@ -201,19 +201,19 @@ function getMessage(key, obj, defaultValue) {
 }
 
 
-function log() {
-  // add a timestamp to console log entries
-  //  var a = ['%c'];
-  //  a.push('display: block; text-align: right;');
-  //  a.push(new moment().format('DD H:mm:ss'));
-  //  a.push('\n');
-  var a = ['\n'];
-  for (var x in log.arguments) {
-    if (log.arguments.hasOwnProperty(x)) {
-      a.push(log.arguments[x]);
-    }
-  }
-  console.log.apply(console, a);
-}
+// function log() {
+//   // add a timestamp to console log entries
+//   //  var a = ['%c'];
+//   //  a.push('display: block; text-align: right;');
+//   //  a.push(new moment().format('DD H:mm:ss'));
+//   //  a.push('\n');
+//   var a = ['\n'];
+//   for (var x in log.arguments) {
+//     if (log.arguments.hasOwnProperty(x)) {
+//       a.push(log.arguments[x]);
+//     }
+//   }
+//   console.log.apply(console, a);
+// }
 
 

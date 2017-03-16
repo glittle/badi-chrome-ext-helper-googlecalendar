@@ -447,7 +447,7 @@ function addToAllDays(config) {
 
       lastDate = thisDate;
 
-      // console.log(thisDate.format('YYYY MM DD'));
+      console.log(thisDate.format('YYYY MM DD'));
 
       var param = {
         cmd: 'getInfo',

@@ -220,7 +220,7 @@ function parseDate(text, formatList) {
     success: false
   };
 
-  var t = text.replace(/ \(.*\)/g, '').replace(/[^\x00-\x7A–]/g, '').split(/[ ,\/]+/);
+  var t = $.trim(text.replace(/ \(.*\)/g, '').replace(/[^\x00-\x7A–]/g, '')).split(/[ ,\/]+/);
   var failures = [text, t.join(' ')];
 
   formats.every(function (f, attempt) {
@@ -599,8 +599,8 @@ function calendarDefaults() {
   // this is potentially useful information, but if the user changes their settings, the #calmaster HTML is NOT updated
   return {
     dtFldOrdr: master.match(/'dtFldOrdr','(.*?)'/)[1],
-    defaultCalMode: master.match(/'defaultCalMode','(.*?)'/)[1],
-    customCalMode: master.match(/'customCalMode','(.*?)'/)[1],
+    // defaultCalMode: master.match(/'defaultCalMode','(.*?)'/)[1],
+    // customCalMode: master.match(/'customCalMode','(.*?)'/)[1],
     locale: master.match(/'locale','(.*?)'/)[1]
   }
 
@@ -623,9 +623,9 @@ function byFieldOrderInSettings(mdy, dmy, ymd) {
     case 'DMY':
       return dmy;
     case 'YMD':
+    default:
       return ymd || mdy;
   }
-  return '';
 }
 
 (function (win) {
@@ -841,6 +841,7 @@ function prepareFormats() {
 }
 
 function runParseTests() {
+  prepareFormats();
   test('Mar 3, 2017', _allFormats, '2017-03-03')
   test('Mar 3 – 17, 2017', _allFormats, '2017-03-03') // 2 week
   test('Mar 3 - Apr 4, 2017', _allFormats, '2017-03-03') // 2 week

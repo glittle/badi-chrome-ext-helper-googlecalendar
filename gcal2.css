@@ -9,6 +9,10 @@
   width: auto;
   cursor: default;
 }
+.bDay img {
+  vertical-align: text-top;
+  margin-right: 3px;
+}
 .bDay.element1 {
   background-color: #ffe6e6;
 }

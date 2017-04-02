@@ -470,11 +470,12 @@ function addToAllDays(config) {
             case 'day':
             case 'custom':
             case 'list':
+              var star = info.hd ? '<img src="{0}">'.filledWith(chrome.extension.getURL('star.png')) : '';
               div = $('<div/>',
                 {
-                  html: info.label,
+                  html: star + info.label,
                   'class': 'bDay' + info.classes + config.classes,
-                  title: info.title
+                  title: (info.hd ? info.hd + '\n' : '') + info.title
                 });
               if (config.wrapIn) {
                 var wrap = $(config.wrapIn);

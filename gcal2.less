@@ -1,120 +1,109 @@
 ﻿@import "colors.less";
-
 .bDay {
-  border-radius: 3px;
-  color: #555;
-  padding: 0 3px 0 3px;
-  width: auto;
-  cursor: default;
-
-  &.element1 {
-    background-color: @lightFire;
-  }
-
-  &.element2 {
-    background-color: @lightAir;
-  }
-
-  &.element3 {
-    background-color: @lightWater;
-  }
-
-  &.element4 {
-    background-color: @lightEarth;
-  }
-
-
-  &.firstBDay {
-    color: #fff;
-
-    &.element0 {
-      color: #555;
+    border-radius: 3px;
+    color: #555;
+    padding: 0 3px 0 3px;
+    width: auto;
+    cursor: default;
+    img {
+        vertical-align: text-top;
+        margin-right: 3px;
     }
-
     &.element1 {
-      background-color: @darkFire;
+        background-color: @lightFire;
     }
-
     &.element2 {
-      background-color: @darkAir;
+        background-color: @lightAir;
     }
-
     &.element3 {
-      background-color: @darkWater;
+        background-color: @lightWater;
     }
-
     &.element4 {
-      background-color: @darkEarth;
+        background-color: @lightEarth;
     }
-  }
+    &.firstBDay {
+        color: #fff;
+        &.element0 {
+            color: #555;
+        }
+        &.element1 {
+            background-color: @darkFire;
+        }
+        &.element2 {
+            background-color: @darkAir;
+        }
+        &.element3 {
+            background-color: @darkWater;
+        }
+        &.element4 {
+            background-color: @darkEarth;
+        }
+    }
 }
 
 // month view
 div.month-row {
-  .bDay {
-    float: right;
-    font-size: .9em;
-    line-height: 1.3em;
-    margin: 1px 0 0 0;
-  }
+    .bDay {
+        float: right;
+        font-size: .9em;
+        line-height: 1.3em;
+        margin: 1px 0 0 0;
+    }
 }
 
 // agenda view
 .lv-datecell {
-  .bDay {
-    font-weight: normal;
-    padding: 2px 0 2px 4px;
-    margin: 3px 0 0 -4px;
-
-    &.firstBDay {
-      font-weight: bold;
+    .bDay {
+        font-weight: normal;
+        padding: 2px 0 2px 4px;
+        margin: 3px 0 0 -4px;
+        &.firstBDay {
+            font-weight: bold;
+        }
     }
-  }
 }
 
 // popup
-.neb-header, .tile {
-  .bDay {
-    display: inline-block;
-    padding: 2px 4px 2px 4px;
-    margin: -2px 0 5px -5px;
-  }
+.neb-header,
+.tile {
+    .bDay {
+        display: inline-block;
+        padding: 2px 4px 2px 4px;
+        margin: -2px 0 5px -5px;
+    }
 }
 
 // popup view 2
 .hin-bubble {
-  .when {
-    .bDay {
-      display: inline-block;
-      padding: 2px 4px 2px 4px;
-      margin: -3px 0 0 -4px;
+    .when {
+        .bDay {
+            display: inline-block;
+            padding: 2px 4px 2px 4px;
+            margin: -3px 0 0 -4px;
+        }
     }
-  }
 }
 
 .drs {
-  .bDay {
-    display: inline-block;
-    padding: 2px 4px 2px 4px;
-    margin: -2px 0 0 0;
-  }
+    .bDay {
+        display: inline-block;
+        padding: 2px 4px 2px 4px;
+        margin: -2px 0 0 0;
+    }
 }
 
 .wk-dayname {
-  .bDay {
-    font-weight: normal;
-
-    &.firstBDay {
-      font-weight: bold;
-    }
-  }
-
-  .bDayWrap {
-    margin: 3px 0 0 0;
-
     .bDay {
-      display: inline;
-      padding: 1px 4px;
+        font-weight: normal;
+        &.firstBDay {
+            font-weight: bold;
+        }
     }
-  }
+    .bDayWrap {
+        margin: 3px 0 0 0;
+        .bDay {
+            display: inline;
+            padding: 1px 4px;
+        }
+    }
 }

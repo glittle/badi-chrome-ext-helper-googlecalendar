@@ -593,16 +593,57 @@ function calendarUpdated(watchedDomElement, layout) {
 }
 
 function calendarDefaults() {
-  // window['INITIAL_DATA'][2][0][0].substr(window['INITIAL_DATA'][2][0][0].indexOf('dtFldOrdr')+12,3)
+  // this info is needed, but if the user changes their settings, the #calmaster HTML is NOT updated until they reload the page
+  var masterHtml = document.getElementById('calmaster').innerHTML;
 
-  var master = document.getElementById('calmaster').innerHTML;
+  // attempt
+  try {
 
-  // this is potentially useful information, but if the user changes their settings, the #calmaster HTML is NOT updated
+    return {
+      dtFldOrdr: masterHtml.match(/\\"dtFldOrdr\\",\\"(.*?)\\"/)[1],
+      locale: masterHtml.match(/\\"locale\\",\\"(.*?)\\"/)[1]
+    }
+  } catch (error) {
+    console.log('attempt 1', error)
+  }
+
+  // attempt
+  try {
+
+    // this is potentially useful information, but if the user changes their settings, the #calmaster HTML is NOT updated
+    return {
+      dtFldOrdr: masterHtml.match(/'dtFldOrdr','(.*?)'/)[1],
+      locale: masterHtml.match(/'locale','(.*?)'/)[1]
+    }
+  } catch (error) {
+    console.log('attempt 2', error)
+  }
+
+  // attempt
+  try {
+    // window['INITIAL_DATA'][2][0][0].substr(window['INITIAL_DATA'][2][0][0].indexOf('dtFldOrdr')+12,3)
+    var settingsRaw = window['INITIAL_DATA'][2][0][0];
+    var settingsGroup = JSON.parse(settingsRaw);
+    var settings = settingsGroup[1];
+
+    var fieldOrder = settings.find(function (a) { return a[0] === 'dtFldOrdr' })[1];
+    var locale = settings.find(function (a) { return a[0] === 'locale' })[1];
+
+    return {
+      dtFldOrdr: fieldOrder,
+      locale: locale
+    }
+  } catch (error) {
+    console.log('attempt 3', error)
+  }
+
+
+  console.warn('Cannot read Google Calendar settings. Using default field order and locale.')
+
+  // give up and return a set of default values. If this guess is wrong, the dates won't show correctly
   return {
-    dtFldOrdr: master.match(/'dtFldOrdr','(.*?)'/)[1],
-    // defaultCalMode: master.match(/'defaultCalMode','(.*?)'/)[1],
-    // customCalMode: master.match(/'customCalMode','(.*?)'/)[1],
-    locale: master.match(/'locale','(.*?)'/)[1]
+    dtFldOrdr: 'YMD',
+    locale: 'en'
   }
 
   // other settings: 

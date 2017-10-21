@@ -31,18 +31,20 @@ function fillCalendar(watchedDomElement, layout) {
 
   //var hash = location.hash;
   //var parts = hash.split(/%7C|,|-/g);
+  var calVersion = layout.slice(-2) === 'V2' ? 'V2' : 'V1';
 
   var config = {
     logDetails: false,
     layout: layout, // parts.length > 1 ? parts[1] : calendarSettings.defaultCalMode,
     daySelector: '',
     dayRegEx: null,
-    contextDateSelector: '.date-top',
+    contextDateSelector: calVersion === 'V2' ? '.KaL5Wc' : '.date-top',
     // contextDateFormat: '',
     hostSelector: '',
     wrapIn: '',
     showNextDayToo: false,
     inEditPage: false,
+    calVersion: calVersion,
     classes: ''
   };
 
@@ -59,10 +61,13 @@ function fillCalendar(watchedDomElement, layout) {
   } else {
     if (config.layout === 'eid' && el.hasClass('mv-event-container')) {
       config.layout = 'month';
+      // } else if(el.hasClass('tNDBE')){
+      //   config.layout = 'monthV2'; // V2
     }
   }
 
   // console.log(config.layout + ', ' + watchedDomElement.className);
+  // debugger;
 
   switch (config.layout) {
     case 'week':
@@ -76,6 +81,12 @@ function fillCalendar(watchedDomElement, layout) {
       config.daySelector = '.st-dtitle span';
       // config.contextDateFormat = 'D - - MMM YYYY;MMM D - - YYYY;MMM D - - - YYYY;MMMM YYYY';// byFieldOrderInSettings('MMM D - - YYYY;MMM D - - - YYYY;D - - MMM YYYY;MMMM YYYY', 'D - - MMM YYYY;MMM D - - YYYY;MMM D - - - YYYY;MMMM YYYY', 'MMM D - - YYYY;MMM D - - - YYYY;D - - MMM YYYY;MMMM YYYY');
       config.dayRegEx = byFieldOrderInSettings(/(\w+ )?(\d+)/, /(\w+ )?(\d+)/, /(\w+ )?(\d+)/); // Sep 1  or  5
+      break;
+
+    case 'monthV2':
+    case 'multiweekV2':
+      config.daySelector = '.t8qpF';
+      config.dayRegEx = byFieldOrderInSettings(/(\w+ )?(\d+)/, /(\w+ )?(\d+)/, /(\w+ )?(\d+)/);
       break;
 
     case 'day':
@@ -325,6 +336,8 @@ function addToAllDays(config) {
 
   var toInsert = [];
 
+  // debugger;
+
   if (config.daySelector) {
 
     var lastDate = null;
@@ -343,7 +356,9 @@ function addToAllDays(config) {
       var originalDateSpan = $(el);
 
       var monthOffset = 0;
-      let thisDayNotInMonth = originalDateSpan.closest('td').hasClass('st-dtitle-nonmonth');
+      let thisDayNotInMonth = config.calVersion === 'V1'
+        ? originalDateSpan.closest('td').hasClass('st-dtitle-nonmonth')
+        : !originalDateSpan.hasClass('YK7obe');
       let rawDayNumberText = originalDateSpan.text();
       var matches = rawDayNumberText.match(config.dayRegEx);
 
@@ -351,9 +366,9 @@ function addToAllDays(config) {
         console.log('Error: ' + config.dayRegEx + ' failed to parse "' + rawDayNumberText + '"');
       }
       // console.log(matches);
-
       switch (config.layout) {
         case 'month':
+        case 'monthV2':
           // debugger;
           // override thisDate
           var dayNum = +matches[2];
@@ -464,6 +479,7 @@ function addToAllDays(config) {
           originalDateSpan.addClass('gDay');
           var div;
           switch (config.layout) {
+            case 'monthV2':
             case 'month':
             case 'multiweek':
             case 'week':
@@ -482,6 +498,7 @@ function addToAllDays(config) {
                 wrap.append(div);
                 div = wrap;
               }
+
               toInsert.push([originalDateSpan, div]);
               break;
             default:
@@ -542,10 +559,12 @@ function addThem(config, toInsert) {
   },
     function () {
       //      console.log(`insert ${toInsert.length} elements`);
+      // debugger;
       for (var j = 0; j < toInsert.length; j++) {
         var item = toInsert[j];
 
         switch (config.layout) {
+          case 'monthV2':
           case 'month':
           case 'list':
           case 'custom':
@@ -594,7 +613,8 @@ function calendarUpdated(watchedDomElement, layout) {
 
 function calendarDefaults() {
   // this info is needed, but if the user changes their settings, the #calmaster HTML is NOT updated until they reload the page
-  var masterHtml = document.getElementById('calmaster').innerHTML;
+  var v1Content = document.getElementById('calmaster');
+  var masterHtml = v1Content ? v1Content.innerHTML : document.body.innerHTML;
 
   // attempt
   try {
@@ -621,6 +641,7 @@ function calendarDefaults() {
 
   // attempt
   try {
+    // debugger;
     // window['INITIAL_DATA'][2][0][0].substr(window['INITIAL_DATA'][2][0][0].indexOf('dtFldOrdr')+12,3)
     var settingsRaw = window['INITIAL_DATA'][2][0][0];
     var settingsGroup = JSON.parse(settingsRaw);
@@ -738,6 +759,8 @@ function getStarted() {
         prepareFormats();
         // runParseTests();
 
+        // month
+        // PRE OCT 2017
         ready('#mvEventContainer', function (el) {
           var numWeeks = $('#mvEventContainer .month-row').length;
           var numWordsInButton = $('.button-strip .goog-imageless-button-checked').text().split(' ');
@@ -747,7 +770,26 @@ function getStarted() {
           } else {
             calendarUpdated(el, 'month');
           }
-        }); // month
+        });
+        // OCT 2017 - V2
+        ready('.tNDBE', function (el) {
+
+          console.log(`Sorry: Wondrous Calendar dates are not no longer available in the "New Design" (Oct 2017) of Google Calendar.`);
+          return;
+
+
+          // debugger;
+          var numWeeks = $('.QIadxc').length;
+          var numWordsInButton = $('.NlWrkb').text().split(' ');
+          if (numWeeks < 4 || numWordsInButton > 1) {
+            calendarUpdated(el, 'multiweekV2');
+          } else {
+            calendarUpdated(el, 'monthV2');
+          }
+        })
+
+
+
         ready('.wk-weektop', function (el) {
           calendarUpdated(el, $(el).hasClass('wk-full-mode') ? 'week' : 'day');
         }); // week, custom
@@ -760,6 +802,11 @@ function getStarted() {
         ready('.datetime-container', function (el) {
           calendarUpdated(el, 'popup');
         }); // popup new event
+
+
+
+
+
 
         // ready('.ep-dpc', calendarUpdated); // edit page
         //

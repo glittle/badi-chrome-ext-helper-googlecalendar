@@ -2,11 +2,44 @@
 /* air of eternity */
 /* water of Divine Unity */
 /* earth */
+.t8qpF {
+  display: flex;
+  height: 32px;
+  justify-content: space-between;
+  align-items: center;
+}
+.t8qpF h2 {
+  white-space: nowrap;
+}
+.SU7tYb {
+  justify-content: space-between;
+  padding-right: 5px;
+  align-items: flex-start;
+}
+.SU7tYb .bDay {
+  margin: 10px 6px 0 0;
+  text-align: right;
+}
+.SU7tYb .bDay span {
+  display: block;
+  font-size: .75em;
+}
+.cKWEWe {
+  white-space: nowrap;
+  font-size: .75em;
+  line-height: 1.3em;
+  text-align: right;
+  margin-top: 1px;
+  margin-right: 2px;
+  width: min-content;
+  max-width: 60%;
+}
 .bDay {
   border-radius: 3px;
-  color: #555;
-  padding: 0 3px 0 3px;
-  width: auto;
+  color: #212121;
+  padding: 1px 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   cursor: default;
 }
 .bDay img {
@@ -14,33 +47,34 @@
   margin-right: 3px;
 }
 .bDay.element1 {
-  background-color: #ffe6e6;
+  background-color: #ffdcdc;
 }
 .bDay.element2 {
-  background-color: #fafafa;
+  background-color: #dcdcdc;
+  border-color: rgba(100, 100, 100, 0.4);
 }
 .bDay.element3 {
-  background-color: #e8e8ff;
+  background-color: #ceceff;
 }
 .bDay.element4 {
-  background-color: #e6ffe6;
-}
-.bDay.firstBDay {
-  color: #fff;
+  background-color: #d2ffd2;
 }
 .bDay.firstBDay.element0 {
   color: #555;
 }
 .bDay.firstBDay.element1 {
+  color: #fff;
   background-color: rgba(255, 0, 0, 0.6);
 }
 .bDay.firstBDay.element2 {
   background-color: rgba(100, 100, 100, 0.4);
 }
 .bDay.firstBDay.element3 {
+  color: #fff;
   background-color: rgba(0, 0, 255, 0.6);
 }
 .bDay.firstBDay.element4 {
+  color: #fff;
   background-color: #009600;
 }
 div.month-row .bDay {

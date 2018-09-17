@@ -1,9 +1,48 @@
 ﻿@import "colors.less";
+// V2
+.t8qpF {
+    // month view
+    display: flex;
+    height: 32px;
+    justify-content: space-between;
+    align-items: center;
+    h2 {
+        white-space: nowrap;
+    }
+}
+
+.SU7tYb {
+    // day view
+    justify-content: space-between;
+    padding-right: 5px;
+    align-items: flex-start;
+    .bDay {
+        margin: 10px 6px 0 0;
+        text-align: right;
+        span {
+            display: block;
+            font-size: .75em;
+        }
+    }
+}
+
+.cKWEWe {
+    white-space: nowrap;
+    font-size: .75em;
+    line-height: 1.3em;
+    text-align: right;
+    margin-top: 1px;
+    margin-right: 2px;
+    width: min-content;
+    max-width: 60%;
+}
+
 .bDay {
     border-radius: 3px;
-    color: #555;
-    padding: 0 3px 0 3px;
-    width: auto;
+    color: #212121;
+    padding: 1px 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     cursor: default;
     img {
         vertical-align: text-top;
@@ -14,6 +53,7 @@
     }
     &.element2 {
         background-color: @lightAir;
+        border-color: @darkAir;
     }
     &.element3 {
         background-color: @lightWater;
@@ -22,20 +62,22 @@
         background-color: @lightEarth;
     }
     &.firstBDay {
-        color: #fff;
         &.element0 {
             color: #555;
         }
         &.element1 {
+            color: #fff;
             background-color: @darkFire;
         }
         &.element2 {
             background-color: @darkAir;
         }
         &.element3 {
+            color: #fff;
             background-color: @darkWater;
         }
         &.element4 {
+            color: #fff;
             background-color: @darkEarth;
         }
     }

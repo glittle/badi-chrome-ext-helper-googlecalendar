@@ -1,17 +1,17 @@
 ﻿@import "colors.less";
 // V2
-.t8qpF {
+X.zYZlv,
+X.t8qpF {
     // month view
     display: flex;
-    height: 32px;
+    align-items: flex-start;
     justify-content: space-between;
-    align-items: center;
     h2 {
         white-space: nowrap;
     }
 }
 
-.SU7tYb {
+X.SU7tYb {
     // day view
     justify-content: space-between;
     padding-right: 5px;
@@ -26,7 +26,7 @@
     }
 }
 
-.cKWEWe {
+X.cKWEWe {
     white-space: nowrap;
     font-size: .75em;
     line-height: 1.3em;
@@ -37,10 +37,24 @@
     max-width: 60%;
 }
 
+// V2 Nov 2018
+.gGDF0e{
+    z-index: 3;
+}
+
+
 .bDay {
+    // Nov 2018
+    float: right;
+    padding: 0 4px;
+    margin: 8px 2px 0 5px;
+    line-height: 1.25em;
+    font-size: 0.8em;
+    // pre Nov 2018
     border-radius: 3px;
     color: #212121;
     padding: 1px 3px;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: default;

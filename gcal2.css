@@ -2,29 +2,30 @@
 /* air of eternity */
 /* water of Divine Unity */
 /* earth */
-.t8qpF {
+X.zYZlv,
+X.t8qpF {
   display: flex;
-  height: 32px;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
 }
-.t8qpF h2 {
+X.zYZlv h2,
+X.t8qpF h2 {
   white-space: nowrap;
 }
-.SU7tYb {
+X.SU7tYb {
   justify-content: space-between;
   padding-right: 5px;
   align-items: flex-start;
 }
-.SU7tYb .bDay {
+X.SU7tYb .bDay {
   margin: 10px 6px 0 0;
   text-align: right;
 }
-.SU7tYb .bDay span {
+X.SU7tYb .bDay span {
   display: block;
   font-size: .75em;
 }
-.cKWEWe {
+X.cKWEWe {
   white-space: nowrap;
   font-size: .75em;
   line-height: 1.3em;
@@ -34,10 +35,19 @@
   width: min-content;
   max-width: 60%;
 }
+.gGDF0e {
+  z-index: 3;
+}
 .bDay {
+  float: right;
+  padding: 0 4px;
+  margin: 8px 2px 0 5px;
+  line-height: 1.25em;
+  font-size: 0.8em;
   border-radius: 3px;
   color: #212121;
   padding: 1px 3px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: default;

@@ -26,7 +26,7 @@ var calClass = {
     monthTitle: '.rSoRzd',
     triggerElement: '.rSoRzd',
     pageTitle: '.KaL5Wc',
-    monthDayTarget: '.cKWEWe', // 'empty' element for us to fill
+    monthDayTarget: '.zYZlv', //'.cKWEWe', // 'empty' element for us to fill
     // notInMonth: 'YK7obe' // no . at front
 };
 
@@ -157,175 +157,6 @@ function fillCalendar(watchedDomElement, layout) {
     addToAllDays(config);
 }
 
-function parsePopupInfo(popupType, config) {
-    config.daySelector = '';
-    var textDate;
-
-    //  console.log('popup-' + popupType);
-
-    switch (popupType) {
-        case 'view1':
-            config.contextDateSelector = '.neb-date div';
-            config.hostSelector = '.neb-date';
-            break;
-        case 'new':
-            config.contextDateSelector = '.period-tile .tile-content div';
-            config.hostSelector = '.tile-content';
-            config.showNextDayToo = true;
-            break;
-        case 'view2':
-            // 9/18 at 8:00am
-            // 18/9 at 8:00am DMT
-            config.contextDateSelector = '.datetime-container';
-            config.hostSelector = '.datetime-container';
-            break;
-    }
-
-    //1 Mon, September 5
-
-    //2 Thu, January 5, 2017
-    //2 Tue, September 13, 1:30pm
-    //2 Tue, September 20, 8am – 9am
-    //2 Tue, September 20, 8:15pm – 9:15pm
-
-    //3 Tue, May 9, 2017, 5:00pm – 5:01pm
-
-    //4 Mon, August 29, 9am – Fri, September 2, 5pm
-
-    //6 Sat, July 8, 2017, 9:51pm – Sun, July 9, 2017, 9:51pm
-
-    textDate = $(config.contextDateSelector).text();
-    let textParts = textDate.split(',');
-    var numCommas = textParts.length - 1;
-
-    // VERY SPECIFIC to English layout!
-    console.log('commas', numCommas)
-    switch (numCommas) {
-        case 0:
-            // config.contextDateFormat = byFieldOrderInSettings('M/DD - h:mma !', 'DD/M - h:mma !', 'M/DD - h:mma !');
-            break;
-        case 1:
-            // config.contextDateFormat = '- MMMM DD !';// byFieldOrderInSettings('-, MMMM DD', '-, MMMM DD', '-, MMMM DD');
-            break;
-        case 2:
-            if (!isNaN(textParts[2])) {
-                // config.contextDateFormat = '- MMMM DD YYYY'; // byFieldOrderInSettings('-, MMMM DD, YYYY', '-, MMMM DD, YYYY', '-, MMMM DD, YYYY');
-            } else {
-                // config.contextDateFormat = '- MMMM D h:mma - - !;- MMMM D YYYY h:mma -;- MMMM D ha - - !;- MMMM D YYYY ha -';// byFieldOrderInSettings('- MMMM D hh:mma -', '-, MMMM DD, hh:mma -', '-, MMMM DD, hh:mma -');
-            }
-            break;
-        case 3:
-            // config.contextDateFormat = '- MMMM DD YYYY h:mma - -;- MMMM DD YYYY -';// byFieldOrderInSettings('-, MMMM DD, YYYY, -', '-, MMMM DD, YYYY, -', '-, MMMM DD, YYYY, -');
-            break;
-        case 4:
-            // config.contextDateFormat = '- MMMM DD - !'; // byFieldOrderInSettings('-, MMMM DD, -', '-, MMMM DD, -', '-, MMMM DD, -');
-            break;
-        case 6:
-            // config.contextDateFormat = '- MMMM DD YYYY -'; // byFieldOrderInSettings('-, MMMM DD, YYYY, -', '-, MMMM DD, YYYY, -', '-, MMMM DD, YYYY, -');
-            break;
-        default:
-            break;
-    }
-
-
-    //  config.logDetails = true;
-
-    return config;
-}
-
-
-function parseEditInfo(config) {
-    config.inEditPage = true;
-    config.classes = ' editBDay';
-
-    config.hostSelector = '.ep-edr-first-line';
-
-    config.contextDateSelector = '.dr-date';
-    config.contextTimeSelector = '.dr-time';
-
-    // config.contextDateFormat = byFieldOrderInSettings('YYYY-MM-DD hh:mma', 'YYYY-MM-DD hh:mma', 'YYYY-MM-DD hh:mma');
-
-    //  config.logDetails = true;
-
-    return config;
-}
-
-// split format and text by space, drop any -
-function parseDate(text, formatList) {
-    var formats = formatList.map(function(s) {
-        var arr = s.split(/[ !]+/);
-        arr.useThisYear = s.indexOf('!') !== -1; // add property to array
-        arr.original = s;
-        return arr;
-    })
-    var result = {
-        success: false
-    };
-
-    var t = $.trim(text.replace(/ \(.*\)/g, '').replace(/[^\x00-\x7A–]/g, '')).split(/[ ,\/]+/);
-    var failures = [text, t.join(' ')];
-
-    formats.every(function(f, attempt) {
-        // console.log(format, useThisYear)
-        var newT = [];
-        var newF = [];
-        for (var i = 0; i < f.length; i++) {
-            if (f[i] === '-') {
-                continue;
-            }
-            if (i >= t.length) {
-                break;
-            }
-            newT.push(t[i]);
-            newF.push(f[i]);
-        }
-        if (!newT.length) {
-            return false;
-        }
-        var partsMismatch = i != t.length;
-
-        result = {
-            attempt: 1 + attempt,
-            success: false,
-            originalFormat: f.original,
-            newF: newF,
-            newT: newT,
-            format: newF.join(' '),
-            text: newT.join(' '),
-            failReason: partsMismatch ? 'mismatch ' + i + '=' + t.length : '',
-            useThisYear: f.useThisYear,
-        };
-
-        if (!partsMismatch) {
-            // console.log('test', result.text, 'x', result.format)
-            result.date = moment(result.text, result.format, true);
-
-            var isValid = result.date.isValid();
-            var inThisYear = isValid && result.useThisYear && result.date.year() == moment().year();
-            var yearMatches = isValid && text.indexOf(result.date.year()) !== -1;
-
-            result.success = isValid && (inThisYear || yearMatches);
-
-            if (!result.success) {
-                result.failReason = !isValid ? 'not valid' : !inThisYear ? 'not this year' : 'year mismatch';
-            }
-        }
-
-        if (!result.success) {
-            failures.push(JSON.stringify(result));
-        }
-
-        return !result.success; // stop if we got one
-    });
-
-    if (!result.success) {
-        // console.log(failures)
-    }
-
-    return result;
-}
-
-
 function addToAllDays(config) {
     let contextDateSpan = $(config.contextDateSelector);
     let contextDateText;
@@ -380,16 +211,22 @@ function addToAllDays(config) {
         // var firstDayTested = false;
         // var multiweekOffset = 0;
 
-        // console.log('First Date', firstDate);
+        // console.log('First Date', firstDate.format('YYYY MMM D'), config.daySelector);
         var thisDate = moment(firstDate);
         thisDate.hour(12); // move to noon
         thisDate.subtract(1, 'day');
         // debugger;
 
         $(config.daySelector + ':visible').each(function(i, el) {
+
+            // debugger;
             // console.log(el.innerHTML);
             var dayHolder = $(el);
             var target = config.targetSelector ? dayHolder.find(config.targetSelector) : dayHolder;
+            if (!target.length) {
+                console.log('missing', config.targetSelector, dayHolder);
+                return;
+            }
 
             // let thisDayNotInMonth = dayHolder.hasClass(calClass.notInMonth);
             let rawDayNumberText = dayHolder.find('h2').text();
@@ -515,7 +352,7 @@ function addToAllDays(config) {
 
             lastDate = thisDate;
 
-            // console.log(thisDate.format('YYYY MM DD'));
+            // console.log('Adding', thisDate.format('YYYY MM DD'));
 
             var param = null;
 
@@ -525,6 +362,7 @@ function addToAllDays(config) {
                         cmd: 'getInfo',
                         targetDay: thisDate.toDate().getTime(),
                         layout: config.layout,
+                        target: target,
                         labelFormat: '{bDay} {bMonthNamePri}<span>Until {endingSunsetDesc}</span><span>{bMonth} - {bYear}</span>', //|',
                         titleFormat: '{element}' // ⇨ 
                     };
@@ -535,6 +373,7 @@ function addToAllDays(config) {
                         cmd: 'getInfo',
                         targetDay: thisDate.toDate().getTime(),
                         layout: config.layout,
+                        target: target,
                         labelFormat: '{bDay} {bMonthNamePri}', //|',
                         titleFormat: 'Until {endingSunsetDesc}\n{bMonth} - {bYear}\n{element}' // ⇨ 
                     };
@@ -542,12 +381,17 @@ function addToAllDays(config) {
             }
 
             // console.log(param, thisDate.format())
+            // console.log('target pre', target.length);
             chrome.runtime.sendMessage(parentExtId, param,
                 function(info) {
                     if (!info) {
                         return; // lost connection?
                     }
-                    // console.log('returned info', info)
+                    // console.log('returned info', info, param)
+                    // console.log('param day', new Date(param.targetDay));
+                    // console.log('result day', info.di.currentDateString);
+                    // console.log('target raw', target.length);
+                    // console.log('target param', param.target.length);
                     //originalDateSpan.addClass('gDay');
                     var div;
                     switch (config.layout) {
@@ -594,8 +438,23 @@ function addToAllDays(config) {
                     }
                 });
         });
+
+        // console.log('done');
+        chrome.runtime.sendMessage(parentExtId, {
+                cmd: 'connect',
+            },
+            function(info) {
+                if (!info) {
+                    return; // lost connection?
+                }
+                // console.log(2, toInsert);
+                addThem(config, toInsert);
+            });
+
+
     } else {
         // just one date - the context date in the popup
+        // console.log('single date');
         chrome.runtime.sendMessage(parentExtId, {
                 cmd: 'getInfo',
                 targetDay: firstDate.toDate().getTime(),
@@ -637,8 +496,8 @@ function addToAllDays(config) {
             });
     }
 
-    // console.log(toInsert);
-    addThem(config, toInsert);
+    // console.log(1, toInsert);
+    // addThem(config, toInsert);
 }
 
 function addThem(config, toInsert) {
@@ -646,7 +505,7 @@ function addThem(config, toInsert) {
             cmd: 'dummy' // just to get in the queue after all the ones above
         },
         function() {
-            //      console.log(`insert ${toInsert.length} elements`);
+            // console.log(`insert ${toInsert.length} elements`);
             // console.log('---- adding ----');
             // debugger;
             for (var j = 0; j < toInsert.length; j++) {
@@ -701,6 +560,175 @@ function addBadiInfo(watchedDomElement, layout) {
         lastLayout = layout;
         lastElement = watchedDomElement;
     }
+}
+
+
+function parsePopupInfo(popupType, config) {
+    config.daySelector = '';
+    var textDate;
+
+    //  console.log('popup-' + popupType);
+
+    switch (popupType) {
+        case 'view1':
+            config.contextDateSelector = '.neb-date div';
+            config.hostSelector = '.neb-date';
+            break;
+        case 'new':
+            config.contextDateSelector = '.period-tile .tile-content div';
+            config.hostSelector = '.tile-content';
+            config.showNextDayToo = true;
+            break;
+        case 'view2':
+            // 9/18 at 8:00am
+            // 18/9 at 8:00am DMT
+            config.contextDateSelector = '.datetime-container';
+            config.hostSelector = '.datetime-container';
+            break;
+    }
+
+    //1 Mon, September 5
+
+    //2 Thu, January 5, 2017
+    //2 Tue, September 13, 1:30pm
+    //2 Tue, September 20, 8am – 9am
+    //2 Tue, September 20, 8:15pm – 9:15pm
+
+    //3 Tue, May 9, 2017, 5:00pm – 5:01pm
+
+    //4 Mon, August 29, 9am – Fri, September 2, 5pm
+
+    //6 Sat, July 8, 2017, 9:51pm – Sun, July 9, 2017, 9:51pm
+
+    textDate = $(config.contextDateSelector).text();
+    let textParts = textDate.split(',');
+    var numCommas = textParts.length - 1;
+
+    // VERY SPECIFIC to English layout!
+    // console.log('commas', numCommas)
+    switch (numCommas) {
+        case 0:
+            // config.contextDateFormat = byFieldOrderInSettings('M/DD - h:mma !', 'DD/M - h:mma !', 'M/DD - h:mma !');
+            break;
+        case 1:
+            // config.contextDateFormat = '- MMMM DD !';// byFieldOrderInSettings('-, MMMM DD', '-, MMMM DD', '-, MMMM DD');
+            break;
+        case 2:
+            if (!isNaN(textParts[2])) {
+                // config.contextDateFormat = '- MMMM DD YYYY'; // byFieldOrderInSettings('-, MMMM DD, YYYY', '-, MMMM DD, YYYY', '-, MMMM DD, YYYY');
+            } else {
+                // config.contextDateFormat = '- MMMM D h:mma - - !;- MMMM D YYYY h:mma -;- MMMM D ha - - !;- MMMM D YYYY ha -';// byFieldOrderInSettings('- MMMM D hh:mma -', '-, MMMM DD, hh:mma -', '-, MMMM DD, hh:mma -');
+            }
+            break;
+        case 3:
+            // config.contextDateFormat = '- MMMM DD YYYY h:mma - -;- MMMM DD YYYY -';// byFieldOrderInSettings('-, MMMM DD, YYYY, -', '-, MMMM DD, YYYY, -', '-, MMMM DD, YYYY, -');
+            break;
+        case 4:
+            // config.contextDateFormat = '- MMMM DD - !'; // byFieldOrderInSettings('-, MMMM DD, -', '-, MMMM DD, -', '-, MMMM DD, -');
+            break;
+        case 6:
+            // config.contextDateFormat = '- MMMM DD YYYY -'; // byFieldOrderInSettings('-, MMMM DD, YYYY, -', '-, MMMM DD, YYYY, -', '-, MMMM DD, YYYY, -');
+            break;
+        default:
+            break;
+    }
+
+
+    //  config.logDetails = true;
+
+    return config;
+}
+
+
+function parseEditInfo(config) {
+    config.inEditPage = true;
+    config.classes = ' editBDay';
+
+    config.hostSelector = '.ep-edr-first-line';
+
+    config.contextDateSelector = '.dr-date';
+    config.contextTimeSelector = '.dr-time';
+
+    // config.contextDateFormat = byFieldOrderInSettings('YYYY-MM-DD hh:mma', 'YYYY-MM-DD hh:mma', 'YYYY-MM-DD hh:mma');
+
+    //  config.logDetails = true;
+
+    return config;
+}
+
+// split format and text by space, drop any -
+function parseDate(text, formatList) {
+    var formats = formatList.map(function(s) {
+        var arr = s.split(/[ !]+/);
+        arr.useThisYear = s.indexOf('!') !== -1; // add property to array
+        arr.original = s;
+        return arr;
+    })
+    var result = {
+        success: false
+    };
+
+    var t = $.trim(text.replace(/ \(.*\)/g, '').replace(/[^\x00-\x7A–]/g, '')).split(/[ ,\/]+/);
+    var failures = [text, t.join(' ')];
+
+    formats.every(function(f, attempt) {
+        // console.log(format, useThisYear)
+        var newT = [];
+        var newF = [];
+        for (var i = 0; i < f.length; i++) {
+            if (f[i] === '-') {
+                continue;
+            }
+            if (i >= t.length) {
+                break;
+            }
+            newT.push(t[i]);
+            newF.push(f[i]);
+        }
+        if (!newT.length) {
+            return false;
+        }
+        var partsMismatch = i != t.length;
+
+        result = {
+            attempt: 1 + attempt,
+            success: false,
+            originalFormat: f.original,
+            newF: newF,
+            newT: newT,
+            format: newF.join(' '),
+            text: newT.join(' '),
+            failReason: partsMismatch ? 'mismatch ' + i + '=' + t.length : '',
+            useThisYear: f.useThisYear,
+        };
+
+        if (!partsMismatch) {
+            // console.log('test', result.text, 'x', result.format)
+            result.date = moment(result.text, result.format, true);
+
+            var isValid = result.date.isValid();
+            var inThisYear = isValid && result.useThisYear && result.date.year() == moment().year();
+            var yearMatches = isValid && text.indexOf(result.date.year()) !== -1;
+
+            result.success = isValid && (inThisYear || yearMatches);
+
+            if (!result.success) {
+                result.failReason = !isValid ? 'not valid' : !inThisYear ? 'not this year' : 'year mismatch';
+            }
+        }
+
+        if (!result.success) {
+            failures.push(JSON.stringify(result));
+        }
+
+        return !result.success; // stop if we got one
+    });
+
+    if (!result.success) {
+        // console.log(failures)
+    }
+
+    return result;
 }
 
 function calendarDefaults() {
@@ -903,6 +931,40 @@ $(document).on('change', '#dtFldOrdr', function() {
 //});
 
 
+
+function prepareFormats() {
+    _allFormats = [
+        'MMM D YYYY',
+        'MMMM YYYY',
+        'MMM D - - - YYYY',
+        'MMM D YYYY - - - -',
+        'D MMM YYYY - - - -',
+        'D - - MMM YYYY',
+        'MMM D - - YYYY',
+        'D MMM - - - YYYY',
+        'D MMM YYYY',
+        '- MMM D YYYY',
+        '- D MMM YYYY',
+        'MMM - - YYYY',
+        // ! means add the current year
+        '- MMM D !',
+        '- MMM D ha - !',
+        '- MMM D ha - - !',
+        '- MMMM D ha - - !',
+        '- MMM D h:mma - - !',
+        '- MMMM D h:mma - - !',
+        '- MMM D HH:mm - - !',
+        '- MMMM D HH:mm - - !',
+        '- D MMMM ha - - !',
+        '- D MMMM h:mma - - !',
+        '- D MMMM HH:mm - - !',
+        '- D MMMM YYYY ha - -',
+        '- D MMMM YYYY h:mma - -',
+        '- D MMMM YYYY HH:mm - -',
+        byFieldOrderInSettings('- M D !', '- D M !'),
+    ];
+}
+
 function findParentExtension() {
     // console.log('looking for parent extension - ' + possibleParents.length);
     var found = 0;
@@ -951,10 +1013,10 @@ function showErrors() {
 }
 
 
-function checkBadiTriggers(mutationsList, observer, doNow) {
+function checkBadiTriggers(mutationsList, observer, doNow, a, b) {
     clearTimeout(startBadiTimer);
 
-    // console.log('checking badi triggers', badiTriggers.length, doNow);
+    // console.log('checking badi triggers', badiTriggers.length, doNow, a, b);
 
     if (mutationsList) {
         for (var mutation of mutationsList) {
@@ -964,15 +1026,17 @@ function checkBadiTriggers(mutationsList, observer, doNow) {
             //     mutation.target.classList.value,
             //     mutation.target.innerHTML.substring(0, 20)
             // );
-            if (mutation.target.childElementCount === 0 && mutation.target.classList.value === 'cKWEWe') {
+            if (mutation.target.childElementCount === 0 && ',zYZlv,cKWEWe,'.indexOf(mutation.target.classList.value) > 0) {
                 // debugger;
+                // console.log('trigger again 1')
                 clearTimeout(startBadiTimer);
                 startBadiTimer = setTimeout(function() {
                     addBadiInfo();
                 }, 100);
             }
-            if (mutation.target.childElementCount === 1 && mutation.target.classList.value.split(' ')[0] === 'SU7tYb') {
+            if (mutation.target.childElementCount === 1 && ',zYZlv,SU7tYb,'.indexOf(mutation.target.classList.value.split(' ')[0]) > 0) {
                 // debugger;
+                // console.log('trigger again 2')
                 clearTimeout(startBadiTimer);
                 startBadiTimer = setTimeout(function() {
                     addBadiInfo();
@@ -1003,7 +1067,7 @@ function checkBadiTriggers(mutationsList, observer, doNow) {
     } else {
         startBadiTimer = setTimeout(function() {
             checkBadiTriggers(null, null, true);
-        }, 100);
+        }, 500); // wait screen to settle first
     }
 }
 
@@ -1013,46 +1077,9 @@ function addBadiTrigger(selector, fn) {
         selector: selector,
         fn: fn
     });
-    // console.log('add Badi trigger', selector);
-    // Check if the new selector is currently in the DOM
-    // checkBadiTriggers();
 }
 
 
-
-
-function prepareFormats() {
-    _allFormats = [
-        'MMM D YYYY',
-        'MMMM YYYY',
-        'MMM D - - - YYYY',
-        'MMM D YYYY - - - -',
-        'D MMM YYYY - - - -',
-        'D - - MMM YYYY',
-        'MMM D - - YYYY',
-        'D MMM - - - YYYY',
-        'D MMM YYYY',
-        '- MMM D YYYY',
-        '- D MMM YYYY',
-        'MMM - - YYYY',
-        // ! means add the current year
-        '- MMM D !',
-        '- MMM D ha - !',
-        '- MMM D ha - - !',
-        '- MMMM D ha - - !',
-        '- MMM D h:mma - - !',
-        '- MMMM D h:mma - - !',
-        '- MMM D HH:mm - - !',
-        '- MMMM D HH:mm - - !',
-        '- D MMMM ha - - !',
-        '- D MMMM h:mma - - !',
-        '- D MMMM HH:mm - - !',
-        '- D MMMM YYYY ha - -',
-        '- D MMMM YYYY h:mma - -',
-        '- D MMMM YYYY HH:mm - -',
-        byFieldOrderInSettings('- M D !', '- D M !'),
-    ];
-}
 
 var MutationObserver = window.MutationObserver || win.WebKitMutationObserver;
 var observer = new MutationObserver(checkBadiTriggers);

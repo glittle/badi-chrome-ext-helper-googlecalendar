@@ -35,21 +35,18 @@ X.cKWEWe {
   width: min-content;
   max-width: 60%;
 }
-.gGDF0e {
-  z-index: 3;
+.zYZlv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.bDay {
-  float: right;
+.zYZlv .bDay {
   padding: 0 4px;
-  margin: 8px 2px 0 5px;
   line-height: 1.25em;
   font-size: 0.8em;
-  border-radius: 3px;
-  color: #212121;
-  padding: 1px 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin: 0 1px 0 0;
+}
+.bDay {
   cursor: default;
 }
 .bDay img {

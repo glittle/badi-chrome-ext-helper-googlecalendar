@@ -1,4 +1,5 @@
 ﻿@import "colors.less";
+
 // V2
 X.zYZlv,
 X.t8qpF {
@@ -6,6 +7,7 @@ X.t8qpF {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
+
     h2 {
         white-space: nowrap;
     }
@@ -16,9 +18,11 @@ X.SU7tYb {
     justify-content: space-between;
     padding-right: 5px;
     align-items: flex-start;
+
     .bDay {
         margin: 10px 6px 0 0;
         text-align: right;
+
         span {
             display: block;
             font-size: .75em;
@@ -42,12 +46,57 @@ X.cKWEWe {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     .bDay {
-        // Nov 2018
-        padding: 0 4px;
-        line-height: 1.25em;
-        font-size: 0.8em;
-        margin: 0 1px 0 0;
+        // Jan 2020
+        padding: 0 1px 0 4px;
+        line-height: 1em;
+        font-size: 0.7rem;
+        white-space: nowrap;
+        margin: 0;
+    }
+
+    .bDayHD {
+        // Jan 2020
+        padding: 1px;
+        line-height: 1em;
+        font-size: 0.7rem;
+        margin: 0;
+        white-space: normal;
+    }
+}
+
+.RKLVef {
+    .bDay {
+        font-size: 0.5em;
+        letter-spacing: normal;
+        line-height: normal;
+        margin: 0 -15px;
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        right: 0;
+        white-space: nowrap;
+    }
+
+    .bDayHD {
+        position: absolute;
+        top: -2px;
+        font-size: 0.4em;
+        letter-spacing: normal;
+        line-height: normal;
+        margin: 0 -15px;
+        position: absolute;
+        left: 0;
+        right: 0;
+    }
+
+    &.KSxb4d.F262Ye {
+
+        .bDay,
+        .bDayHD {
+            color: black;
+        }
     }
 }
 
@@ -60,40 +109,51 @@ X.cKWEWe {
 //      overflow: hidden;
 //      text-overflow: ellipsis;
 // }
-.bDay {
+.bDay,
+.bDayHD {
     cursor: default;
+
     img {
         vertical-align: text-top;
         margin-right: 3px;
     }
+
     &.element1 {
         background-color: @lightFire;
     }
+
     &.element2 {
         background-color: @lightAir;
         border-color: @darkAir;
     }
+
     &.element3 {
         background-color: @lightWater;
     }
+
     &.element4 {
         background-color: @lightEarth;
     }
+
     &.firstBDay {
         &.element0 {
             color: #555;
         }
+
         &.element1 {
             color: #fff;
             background-color: @darkFire;
         }
+
         &.element2 {
             background-color: @darkAir;
         }
+
         &.element3 {
             color: #fff;
             background-color: @darkWater;
         }
+
         &.element4 {
             color: #fff;
             background-color: @darkEarth;
@@ -117,6 +177,7 @@ div.month-row {
         font-weight: normal;
         padding: 2px 0 2px 4px;
         margin: 3px 0 0 -4px;
+
         &.firstBDay {
             font-weight: bold;
         }
@@ -155,12 +216,15 @@ div.month-row {
 .wk-dayname {
     .bDay {
         font-weight: normal;
+
         &.firstBDay {
             font-weight: bold;
         }
     }
+
     .bDayWrap {
         margin: 3px 0 0 0;
+
         .bDay {
             display: inline;
             padding: 1px 4px;

@@ -23,11 +23,11 @@ X.SU7tYb .bDay {
 }
 X.SU7tYb .bDay span {
   display: block;
-  font-size: .75em;
+  font-size: 0.75em;
 }
 X.cKWEWe {
   white-space: nowrap;
-  font-size: .75em;
+  font-size: 0.75em;
   line-height: 1.3em;
   text-align: right;
   margin-top: 1px;
@@ -41,52 +41,96 @@ X.cKWEWe {
   align-items: center;
 }
 .zYZlv .bDay {
-  padding: 0 4px;
-  line-height: 1.25em;
-  font-size: 0.8em;
-  margin: 0 1px 0 0;
+  padding: 0 1px 0 4px;
+  line-height: 1em;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  margin: 0;
 }
-.bDay {
+.zYZlv .bDayHD {
+  padding: 1px;
+  line-height: 1em;
+  font-size: 0.7rem;
+  margin: 0;
+  white-space: normal;
+}
+.RKLVef .bDay {
+  font-size: 0.5em;
+  letter-spacing: normal;
+  line-height: normal;
+  margin: 0 -15px;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  white-space: nowrap;
+}
+.RKLVef .bDayHD {
+  top: -2px;
+  font-size: 0.4em;
+  letter-spacing: normal;
+  line-height: normal;
+  margin: 0 -15px;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.RKLVef.KSxb4d.F262Ye .bDay,
+.RKLVef.KSxb4d.F262Ye .bDayHD {
+  color: black;
+}
+.bDay,
+.bDayHD {
   cursor: default;
 }
-.bDay img {
+.bDay img,
+.bDayHD img {
   vertical-align: text-top;
   margin-right: 3px;
 }
-.bDay.element1 {
+.bDay.element1,
+.bDayHD.element1 {
   background-color: #ffdcdc;
 }
-.bDay.element2 {
+.bDay.element2,
+.bDayHD.element2 {
   background-color: #dcdcdc;
   border-color: rgba(100, 100, 100, 0.4);
 }
-.bDay.element3 {
+.bDay.element3,
+.bDayHD.element3 {
   background-color: #ceceff;
 }
-.bDay.element4 {
+.bDay.element4,
+.bDayHD.element4 {
   background-color: #d2ffd2;
 }
-.bDay.firstBDay.element0 {
+.bDay.firstBDay.element0,
+.bDayHD.firstBDay.element0 {
   color: #555;
 }
-.bDay.firstBDay.element1 {
+.bDay.firstBDay.element1,
+.bDayHD.firstBDay.element1 {
   color: #fff;
   background-color: rgba(255, 0, 0, 0.6);
 }
-.bDay.firstBDay.element2 {
+.bDay.firstBDay.element2,
+.bDayHD.firstBDay.element2 {
   background-color: rgba(100, 100, 100, 0.4);
 }
-.bDay.firstBDay.element3 {
+.bDay.firstBDay.element3,
+.bDayHD.firstBDay.element3 {
   color: #fff;
   background-color: rgba(0, 0, 255, 0.6);
 }
-.bDay.firstBDay.element4 {
+.bDay.firstBDay.element4,
+.bDayHD.firstBDay.element4 {
   color: #fff;
   background-color: #009600;
 }
 div.month-row .bDay {
   float: right;
-  font-size: .9em;
+  font-size: 0.9em;
   line-height: 1.3em;
   margin: 1px 0 0 0;
 }

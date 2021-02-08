@@ -4,6 +4,7 @@ var pendingFormat = '';
 // var added = false;
 var calendarSettings = {};
 var _allFormats;
+var showDebugInfo = 0; // 1 or 2
 
 var possibleParents = [
     'mbihjpcmockmpboapkcbppjkmjfajlfl', // Glen dev 1
@@ -24,7 +25,7 @@ var calClass = {
     week: '.QIadxc',
     monthDay: '.t8qpF',
     monthTitle: '.rSoRzd',
-    triggerElement: '.rSoRzd',
+    triggerElement: '.rSoRzd', //,.RKLVef,.rpCPrc,.fimTmc',
     pageTitle: '.KaL5Wc',
     monthDayTarget: '.zYZlv', //'.cKWEWe', // 'empty' element for us to fill
     // notInMonth: 'YK7obe' // no . at front
@@ -42,10 +43,12 @@ function fillCalendar(watchedDomElement, layout) {
     if (!watchedDomElement) {
         return;
     }
-    console.log('adding Badi info', layout, watchedDomElement);
-    // debugger;
+    // debugger
 
-    // console.log(JSON.stringify(calendarSettings));
+    if (showDebugInfo) {
+        console.log('adding Badi info', layout, watchedDomElement);
+        console.log('calendarSettings', JSON.stringify(calendarSettings));
+    }
     // calendarSettings = calendarDefaults();
     // console.log(JSON.stringify(calendarSettings));
 
@@ -54,7 +57,6 @@ function fillCalendar(watchedDomElement, layout) {
     var calVersion = 'V2'; //  layout.slice(-2) === 'V2' ? 'V2' : 'V1';
 
     var config = {
-        logDetails: false,
         layout: layout, // parts.length > 1 ? parts[1] : calendarSettings.defaultCalMode,
         daySelector: '',
         dayRegEx: null,
@@ -71,9 +73,9 @@ function fillCalendar(watchedDomElement, layout) {
     var el = $(watchedDomElement); // may be null
     let popupType =
         el.hasClass('neb-date') ? 'view1' :
-        el.hasClass('period-tile') ? 'new' :
-        el.hasClass('datetime-container') ? 'view2' :
-        '';
+            el.hasClass('period-tile') ? 'new' :
+                el.hasClass('datetime-container') ? 'view2' :
+                    '';
 
     if (popupType) {
         config.layout = 'popup';
@@ -86,7 +88,10 @@ function fillCalendar(watchedDomElement, layout) {
         }
     }
 
-    // console.log(config.layout + ', ' + watchedDomElement.className);
+    if (showDebugInfo) {
+        console.log('config layout', config.layout, watchedDomElement.className);
+    }
+
     // debugger;
 
     switch (config.layout) {
@@ -111,12 +116,13 @@ function fillCalendar(watchedDomElement, layout) {
 
         case 'multiweekV2':
             config.daySelector = '.RKLVef';
-            config.targetSelector = null; // calClass.monthDayTarget;
+            config.targetSelector = null; //'.SU7tYb'; // calClass.monthDayTarget;
             config.dayRegEx = byFieldOrderInSettings(/(\w+ )?(\d+)/, /(\w+ )?(\d+)/, /(\w+ )?(\d+)/);
             break;
 
         case 'dayV2':
             config.daySelector = '.R2tnIf';
+            config.targetSelector = '.fimTmc';
             config.dayRegEx = byFieldOrderInSettings(/(\w+ )?(\d+)/, /(\w+ )?(\d+)/, /(\w+ )?(\d+)/);
             break;
 
@@ -180,18 +186,18 @@ function addToAllDays(config) {
     }
 
     if (parseFailed) {
-        // config.logDetails = true;
         console.log('unable to determine date from current display')
     }
 
-    if (config.logDetails) {
-        console.log('context layout: ' + config.layout);
-        console.log('field order: ' + byFieldOrderInSettings(1, 2, 3));
+    if (showDebugInfo) {
+        console.log('context layout:', config.layout);
+        console.log('field order:', byFieldOrderInSettings(1, 2, 3));
         // console.log('formats: ' + config.contextDateFormat);
-        console.log('format used: ' + formatUsed);
-        console.log('context text: ' + contextDateText);
-        console.log('context date: ' + (firstDate ? firstDate.format('YYYY MMM D') : 'no date'));
-        console.log(config.daySelector);
+        console.log('format used:', formatUsed);
+        console.log('context text:', contextDateText);
+        console.log('context date:', (firstDate ? firstDate.format('YYYY MMM D') : 'no date'));
+        console.log('daySelector:', config.daySelector);
+        console.log('targetSelector:', config.targetSelector);
     }
 
     if (parseFailed) {
@@ -203,7 +209,6 @@ function addToAllDays(config) {
     var toInsert = [];
 
     // debugger;
-
     if (config.daySelector) {
 
         var lastDate = null;
@@ -211,216 +216,245 @@ function addToAllDays(config) {
         // var firstDayTested = false;
         // var multiweekOffset = 0;
 
-        // console.log('First Date', firstDate.format('YYYY MMM D'), config.daySelector);
+        var dayCells = $(config.daySelector + ':visible');
+        var singleDay = dayCells.length === 1;
+
+        if (showDebugInfo) {
+            console.log('First Date', firstDate.format('YYYY MMM D'), dayCells, config.daySelector);
+        }
+
         var thisDate = moment(firstDate);
         thisDate.hour(12); // move to noon
-        thisDate.subtract(1, 'day');
 
+        if (!singleDay) {
+            thisDate.subtract(1, 'day');
+
+            if (showDebugInfo) {
+                console.log('This Date', thisDate.format('YYYY MMM D'));
+            }
+        }
         // debugger;
 
-        $(config.daySelector + ':visible').each(function(i, el) {
+        dayCells.each(function (i, el) {
 
-                    // debugger;
-                    // console.log(el.innerHTML);
-                    var dayHolder = $(el);
-                    var target = config.targetSelector ? dayHolder.find(config.targetSelector) : dayHolder;
-                    if (!target.length) {
-                        console.log('missing', config.targetSelector, dayHolder);
-                        return;
-                    }
+            // debugger;
+            // console.log(el.innerHTML);
+            var dayHolder = $(el);
+            var target = config.targetSelector ? dayHolder.find(config.targetSelector) : dayHolder;
+            if (!target.length) {
+                console.log('missing', config.targetSelector, dayHolder);
+                return;
+            }
 
-                    // let thisDayNotInMonth = dayHolder.hasClass(calClass.notInMonth);
-                    let rawDayNumberText = config.targetSelector ? dayHolder.find('h2').text() : dayHolder.text();
-                    var matches = rawDayNumberText.match(config.dayRegEx);
+            // let thisDayNotInMonth = dayHolder.hasClass(calClass.notInMonth);
+            //dayHolder.find('.bDay').remove();
+            let rawDayNumberText = config.targetSelector
+                ? dayHolder.find('h2').text()
+                : dayHolder.text();
+            var matches = rawDayNumberText.match(config.dayRegEx);
+            // debugger
+            if (!matches) {
+                console.log('Error: ' + config.dayRegEx + ' failed to parse "' + rawDayNumberText + '"');
+            }
+            // console.log(matches);
 
-                    if (!matches) {
-                        console.log('Error: ' + config.dayRegEx + ' failed to parse "' + rawDayNumberText + '"');
-                    }
-                    // console.log(matches);
-                    thisDate.add(1, 'day');
+            if (showDebugInfo) {
+                console.log('matches', rawDayNumberText, config.dayRegEx, matches);
+                console.log('config.layout', config.layout);
+            }
 
-                    switch (config.layout) {
-                        case 'month':
-                        case 'monthV2':
-                            // override thisDate
-                            var dayNum = +matches[2];
-                            if (dayNum === 1) {
-                                if (startedMonth) {
-                                    // first day of next month
-                                    thisDate.month(firstDate.month() + 1);
-                                    thisDate.date(dayNum);
-                                }
-                                startedMonth = true;
-                            } else {
-                                if (!startedMonth) {
-                                    // before the month
-                                    thisDate.month(firstDate.month() - 1);
-                                    thisDate.date(dayNum);
-                                }
-                            }
-                            break;
+            thisDate.add(1, 'day');
 
-                        case 'multiweekV2':
-                            dayNum = +matches[2];
-                            if (!startedMonth) {
-                                thisDate.month(firstDate.month());
-                                thisDate.date(dayNum);
-                                startedMonth = true;
-                            }
-                            if (dayNum === 1) {
-                                if (startedMonth) {
-                                    // first day of next month
-                                    thisDate.month(firstDate.month() + 1);
-                                    thisDate.date(dayNum);
-                                }
-                            }
-                            break;
-
-                        case 'dayV2':
-                            dayNum = +matches[2];
+            if (showDebugInfo) {
+                console.log('This Date', thisDate.format('YYYY MMM D'));
+            }
+            // debugger;
+            switch (config.layout) {
+                case 'month':
+                case 'monthV2':
+                    // override thisDate
+                    var dayNum = +matches[2];
+                    if (dayNum === 1) {
+                        if (startedMonth) {
+                            // first day of next month
+                            thisDate.month(firstDate.month() + 1);
                             thisDate.date(dayNum);
-                            break;
-
-                            //   case 'multiweek':
-                            //     var dayNum = +matches[2];
-                            //     if (!firstDayTested) {
-                            //       multiweekOffset = thisDayNotInMonth ? 0 : 1;
-                            //       firstDayTested = true;
-                            //     }
-                            //     if (thisDayNotInMonth) {
-                            //       if (!startedMonth) {
-                            //         // for multi-week, first day and first month match
-                            //         monthOffset = multiweekOffset;
-                            //       }
-                            //       if (startedMonth) {
-                            //         // before the month
-                            //         monthOffset = multiweekOffset + 1;
-                            //       }
-                            //     } else {
-                            //       startedMonth = true;
-                            //       monthOffset = multiweekOffset;
-                            //     }
-                            //     thisDate.month(thisDate.month() + monthOffset);
-                            //     thisDate.date(dayNum);
-                            //     break;
-
-                        case 'list':
-                            thisDate.date(+matches[byFieldOrderInSettings({
-                                month: 1,
-                                day: 2
-                            }, {
-                                day: 2,
-                                month: 1
-                            }, {
-                                month: 1,
-                                day: 2
-                            }).day]);
-                            if (lastDate) {
-                                if (thisDate.isBefore(lastDate)) {
-                                    thisDate.month(thisDate.month() + 1);
-                                }
-                            }
-                            break;
-
-                            //   default:
-                            //     let regExPositions = byFieldOrderInSettings({
-                            //       month: 1,
-                            //       day: 2
-                            //     },
-                            //       {
-                            //         day: 1,
-                            //         month: 2
-                            //       },
-                            //       {
-                            //         month: 1,
-                            //         day: 2
-                            //       });
-                            //     thisDate.month(+matches[regExPositions.month] - 1);
-                            //     thisDate.date(+matches[regExPositions.day]);
-                            //     break;
+                        }
+                        startedMonth = true;
+                    } else {
+                        if (!startedMonth) {
+                            // before the month
+                            thisDate.month(firstDate.month() - 1);
+                            thisDate.date(dayNum);
+                        }
                     }
+                    break;
 
+                case 'multiweekV2':
+                    dayNum = +matches[2];
+                    if (!startedMonth) {
+                        thisDate.month(firstDate.month());
+                        thisDate.date(dayNum);
+                    }
+                    if (dayNum === 1) {
+                        if (startedMonth) {
+                            // first day of next month
+                            thisDate.month(firstDate.month() + 1);
+                            thisDate.date(dayNum);
+                        }
+                    }
+                    startedMonth = true;
+                    break;
+
+                case 'dayV2':
+                    dayNum = +matches[2];
+                    thisDate.date(dayNum);
+                    break;
+
+                //   case 'multiweek':
+                //     var dayNum = +matches[2];
+                //     if (!firstDayTested) {
+                //       multiweekOffset = thisDayNotInMonth ? 0 : 1;
+                //       firstDayTested = true;
+                //     }
+                //     if (thisDayNotInMonth) {
+                //       if (!startedMonth) {
+                //         // for multi-week, first day and first month match
+                //         monthOffset = multiweekOffset;
+                //       }
+                //       if (startedMonth) {
+                //         // before the month
+                //         monthOffset = multiweekOffset + 1;
+                //       }
+                //     } else {
+                //       startedMonth = true;
+                //       monthOffset = multiweekOffset;
+                //     }
+                //     thisDate.month(thisDate.month() + monthOffset);
+                //     thisDate.date(dayNum);
+                //     break;
+
+                case 'list':
+                    thisDate.date(+matches[byFieldOrderInSettings({
+                        month: 1,
+                        day: 2
+                    }, {
+                        day: 2,
+                        month: 1
+                    }, {
+                        month: 1,
+                        day: 2
+                    }).day]);
                     if (lastDate) {
                         if (thisDate.isBefore(lastDate)) {
-                            thisDate.year(thisDate.year() + 1);
+                            thisDate.month(thisDate.month() + 1);
                         }
-
-                        //   if (lastDate === thisDate) {
-                        //     // parsing has failed
-                        //     console.log('failed parse', thisDate)
-                        //   }
                     }
+                    break;
 
-                    lastDate = thisDate;
+                //   default:
+                //     let regExPositions = byFieldOrderInSettings({
+                //       month: 1,
+                //       day: 2
+                //     },
+                //       {
+                //         day: 1,
+                //         month: 2
+                //       },
+                //       {
+                //         month: 1,
+                //         day: 2
+                //       });
+                //     thisDate.month(+matches[regExPositions.month] - 1);
+                //     thisDate.date(+matches[regExPositions.day]);
+                //     break;
+            }
 
-                    // console.log('Adding', thisDate.format('YYYY MM DD'));
+            if (lastDate) {
+                if (thisDate.isBefore(lastDate)) {
+                    thisDate.year(thisDate.year() + 1);
+                }
 
-                    var param = null;
+                //   if (lastDate === thisDate) {
+                //     // parsing has failed
+                //     console.log('failed parse', thisDate)
+                //   }
+            }
 
+            lastDate = thisDate;
+
+            if (showDebugInfo) {
+                console.log('Adding', thisDate.format('YYYY MM DD'));
+            }
+
+            var param = null;
+
+            switch (config.layout) {
+                case 'dayV2':
+                    param = {
+                        cmd: 'getInfo',
+                        targetDay: thisDate.toDate().getTime(),
+                        layout: config.layout,
+                        target: target,
+                        labelFormat: '{bDay} {bMonthNamePri}<span>Until {endingSunsetDesc}</span><span>{bMonth} - {bYear}</span>', //|',
+                        titleFormat: '{element}' // ⇨ 
+                    };
+                    break;
+                case 'monthV2':
+                case 'multiweekV2':
+                    param = {
+                        cmd: 'getInfo',
+                        targetDay: thisDate.toDate().getTime(),
+                        layout: config.layout,
+                        target: target,
+                        labelFormat: '{bDay} {bMonthNamePri}', //|',
+                        titleFormat: 'Until {endingSunsetDesc}\n{bMonth} - {bYear}\n{element}' // ⇨ 
+                    };
+                    break;
+            }
+
+            // console.log(param, thisDate.format())
+            // console.log('target pre', target.length);
+            chrome.runtime.sendMessage(parentExtId, param,
+                function (info) {
+                    if (!info) {
+                        return; // lost connection?
+                    }
+                    if (showDebugInfo) {
+                        console.log('returned info, param', info, param)
+                        console.log('param day', new Date(param.targetDay));
+                        console.log('result', config.layout, info.di.currentDateString, info.di.element);
+                    }
+                    var div;
                     switch (config.layout) {
                         case 'dayV2':
-                            param = {
-                                cmd: 'getInfo',
-                                targetDay: thisDate.toDate().getTime(),
-                                layout: config.layout,
-                                target: target,
-                                labelFormat: '{bDay} {bMonthNamePri}<span>Until {endingSunsetDesc}</span><span>{bMonth} - {bYear}</span>', //|',
-                                titleFormat: '{element}' // ⇨ 
-                            };
+                            var star = info.hd ? '<img src="{0}">'.filledWith(chrome.extension.getURL('star.png')) : '';
+                            div = $('<div/>', {
+                                html: star + (info.hd ? ' ' + info.hd + '<br>' : '') + info.label,
+                                'class': 'bDay' + info.classes + config.classes,
+                                title: (info.hd ? info.hd + '\n' : '') + info.title
+                            });
+                            if (config.wrapIn) {
+                                var wrap = $(config.wrapIn);
+                                wrap.append(div);
+                                div = wrap;
+                            }
+
+                            toInsert.push([target, div]);
                             break;
                         case 'monthV2':
                         case 'multiweekV2':
-                            param = {
-                                cmd: 'getInfo',
-                                targetDay: thisDate.toDate().getTime(),
-                                layout: config.layout,
-                                target: target,
-                                labelFormat: '{bDay} {bMonthNamePri}', //|',
-                                titleFormat: 'Until {endingSunsetDesc}\n{bMonth} - {bYear}\n{element}' // ⇨ 
-                            };
-                            break;
-                    }
-
-                    // console.log(param, thisDate.format())
-                    // console.log('target pre', target.length);
-                    chrome.runtime.sendMessage(parentExtId, param,
-                            function(info) {
-                                if (!info) {
-                                    return; // lost connection?
-                                }
-                                // console.log('returned info', info, param)
-                                // console.log('param day', new Date(param.targetDay));
-                                // console.log('result', config.layout, info.di.currentDateString, info.di.element);
-                                var div;
-                                switch (config.layout) {
-                                    case 'dayV2':
-                                        var star = info.hd ? '<img src="{0}">'.filledWith(chrome.extension.getURL('star.png')) : '';
-                                        div = $('<div/>', {
-                                            html: star + (info.hd ? ' ' + info.hd + '<br>' : '') + info.label,
-                                            'class': 'bDay' + info.classes + config.classes,
-                                            title: (info.hd ? info.hd + '\n' : '') + info.title
-                                        });
-                                        if (config.wrapIn) {
-                                            var wrap = $(config.wrapIn);
-                                            wrap.append(div);
-                                            div = wrap;
-                                        }
-
-                                        toInsert.push([target, div]);
-                                        break;
-                                    case 'monthV2':
-                                    case 'multiweekV2':
-                                    case 'month':
-                                    case 'multiweek':
-                                    case 'week':
-                                    case 'day':
-                                    case 'custom':
-                                    case 'list':
-                                        var star = info.hd ? '<img src="{0}">'.filledWith(chrome.extension.getURL('star.png')) : '';
-                                        div = $(`<div title="${(info.hd 
-                                                ? info.hd + '\n' : '') + info.title}" class="${'bDay' 
-                                                + info.classes + config.classes}">${star + info.label}</div>${info.hd ? `<div class="${'bDayHD' 
-                                                + info.classes + config.classes}">${info.hd}</div>` : ''}`);
+                        case 'month':
+                        case 'multiweek':
+                        case 'week':
+                        case 'day':
+                        case 'custom':
+                        case 'list':
+                            var star = info.hd ? '<img src="{0}">'.filledWith(chrome.extension.getURL('star.png')) : '';
+                            div = $(`<div title="${(info.hd
+                                ? info.hd + '\n' : '') + info.title}" class="${'bDay'
+                                + info.classes + config.classes}">${star + info.label}</div>${info.hd ? `<div class="${'bDayHD'
+                                    + info.classes + config.classes}">${info.hd}</div>` : ''}`);
                             // console.log(div[0].outerHTML);
                             if (config.wrapIn) {
                                 var wrap = $(config.wrapIn);
@@ -436,10 +470,13 @@ function addToAllDays(config) {
                 });
         });
 
-        // console.log('done');
+        if (showDebugInfo) {
+            console.log('done');
+        }
+
         chrome.runtime.sendMessage(parentExtId, {
-                cmd: 'connect',
-            },
+            cmd: 'connect',
+        },
             function (info) {
                 if (!info) {
                     return; // lost connection?
@@ -453,12 +490,12 @@ function addToAllDays(config) {
         // just one date - the context date in the popup
         // console.log('single date');
         chrome.runtime.sendMessage(parentExtId, {
-                cmd: 'getInfo',
-                targetDay: firstDate.toDate().getTime(),
-                layout: config.layout,
-                labelFormat: '{bDay} {bMonthNamePri}', //|',
-                titleFormat: 'Until {endingSunsetDesc}\n{bMonth} - {bYear}\n{element}' // ⇨ 
-            },
+            cmd: 'getInfo',
+            targetDay: firstDate.toDate().getTime(),
+            layout: config.layout,
+            labelFormat: '{bDay} {bMonthNamePri}', //|',
+            titleFormat: 'Until {endingSunsetDesc}\n{bMonth} - {bYear}\n{element}' // ⇨ 
+        },
             function (info) {
                 contextDateSpan.addClass('gDay');
                 var host = contextDateSpan.closest(config.hostSelector);
@@ -466,10 +503,10 @@ function addToAllDays(config) {
                 if (config.showNextDayToo) {
                     firstDate.add(1, 'd');
                     chrome.runtime.sendMessage(parentExtId, {
-                            cmd: 'getInfo',
-                            targetDay: firstDate.toDate().getTime(),
-                            layout: config.layout
-                        },
+                        cmd: 'getInfo',
+                        targetDay: firstDate.toDate().getTime(),
+                        layout: config.layout
+                    },
                         function (info2) {
                             var div = $('<div/>', {
                                 html: info.label + ' / ' + info2.label,
@@ -493,17 +530,21 @@ function addToAllDays(config) {
             });
     }
 
-    // console.log(1, toInsert);
+    if (showDebugInfo) {
+        console.log(1, toInsert);
+    }
     // addThem(config, toInsert);
 }
 
 function addThem(config, toInsert) {
     chrome.runtime.sendMessage(parentExtId, {
-            cmd: 'dummy' // just to get in the queue after all the ones above
-        },
+        cmd: 'dummy' // just to get in the queue after all the ones above
+    },
         function () {
-            // console.log(`insert ${toInsert.length} elements`);
-            // console.log('---- adding ----');
+            if (showDebugInfo) {
+                console.log(`insert ${toInsert.length} elements`);
+                console.log('---- adding ----');
+            }
             // debugger;
             for (var j = 0; j < toInsert.length; j++) {
                 var item = toInsert[j];
@@ -602,7 +643,9 @@ function parsePopupInfo(popupType, config) {
     var numCommas = textParts.length - 1;
 
     // VERY SPECIFIC to English layout!
-    // console.log('commas', numCommas)
+    if (showDebugInfo) {
+        console.log('parse', config.contextDateSelector, numCommas)
+    }
     switch (numCommas) {
         case 0:
             // config.contextDateFormat = byFieldOrderInSettings('M/DD - h:mma !', 'DD/M - h:mma !', 'M/DD - h:mma !');
@@ -630,9 +673,6 @@ function parsePopupInfo(popupType, config) {
             break;
     }
 
-
-    //  config.logDetails = true;
-
     return config;
 }
 
@@ -647,8 +687,6 @@ function parseEditInfo(config) {
     config.contextTimeSelector = '.dr-time';
 
     // config.contextDateFormat = byFieldOrderInSettings('YYYY-MM-DD hh:mma', 'YYYY-MM-DD hh:mma', 'YYYY-MM-DD hh:mma');
-
-    //  config.logDetails = true;
 
     return config;
 }
@@ -669,7 +707,9 @@ function parseDate(text, formatList) {
     var failures = [text, t.join(' ')];
 
     formats.every(function (f, attempt) {
-        // console.log(format, useThisYear)
+        if (showDebugInfo) {
+            console.log(f, attempt, t)
+        }
         var newT = [];
         var newF = [];
         for (var i = 0; i < f.length; i++) {
@@ -700,7 +740,9 @@ function parseDate(text, formatList) {
         };
 
         if (!partsMismatch) {
-            // console.log('test', result.text, 'x', result.format)
+            if (showDebugInfo) {
+                console.log('test', result.text, 'x', result.format)
+            }
             result.date = moment(result.text, result.format, true);
 
             var isValid = result.date.isValid();
@@ -711,6 +753,13 @@ function parseDate(text, formatList) {
 
             if (!result.success) {
                 result.failReason = !isValid ? 'not valid' : !inThisYear ? 'not this year' : 'year mismatch';
+            }
+        }
+
+        if (showDebugInfo) {
+            // console.log('parseDate', text, result)
+            if (result.success) {
+                console.log('--> date', result.date.format())
             }
         }
 
@@ -733,16 +782,17 @@ function calendarDefaults() {
     var v1Content = document.getElementById('calmaster');
     var masterHtml = v1Content ? v1Content.innerHTML : document.body.innerHTML;
 
+    let defaultAnswer = {
+        dtFldOrdr: 'YMD',
+        locale: 'en'
+    };
+
     // attempt Nov 2019
     try {
         // debugger;
         // window['INITIAL_DATA'][2][0][0].substr(window['INITIAL_DATA'][2][0][0].indexOf('dtFldOrdr')+12,3)
         var allSettings = JSON.parse(document.getElementById('initialdata').firstChild.data);
         let settings = allSettings[39][1][1][1];
-        let defaultAnswer = {
-            dtFldOrdr: 'YMD',
-            locale: 'en'
-        };
         let found = 0;
         settings.forEach(function (a) {
             // console.log(a[0][0]);
@@ -755,10 +805,10 @@ function calendarDefaults() {
             }
         });
         if (found === 2) {
-            return {
-                dtFldOrdr: fieldOrder,
-                locale: locale
+            if (showDebugInfo) {
+                console.log('got defaults 1', defaultAnswer);
             }
+            return defaultAnswer;
         }
     } catch (error) {
         console.log('attempt 1', error)
@@ -766,11 +816,14 @@ function calendarDefaults() {
 
     // attempt
     try {
-
-        return {
+        let info = {
             dtFldOrdr: masterHtml.match(/\\"dtFldOrdr\\",\\"(.*?)\\"/)[1],
             locale: masterHtml.match(/\\"locale\\",\\"(.*?)\\"/)[1]
+        };
+        if (showDebugInfo) {
+            console.log('got defaults 2', info);
         }
+        return info;
     } catch (error) {
         console.log('attempt 2', error)
     }
@@ -779,10 +832,14 @@ function calendarDefaults() {
     try {
 
         // this is potentially useful information, but if the user changes their settings, the #calmaster HTML is NOT updated
-        return {
+        let info = {
             dtFldOrdr: masterHtml.match(/'dtFldOrdr','(.*?)'/)[1],
             locale: masterHtml.match(/'locale','(.*?)'/)[1]
+        };
+        if (showDebugInfo) {
+            console.log('got defaults 3', info);
         }
+        return info;
     } catch (error) {
         console.log('attempt 3', error)
     }
@@ -801,24 +858,22 @@ function calendarDefaults() {
         var locale = settings.find(function (a) {
             return a[0] === 'locale'
         })[1];
-
-        return {
+        let info = {
             dtFldOrdr: fieldOrder,
             locale: locale
+        };
+        if (showDebugInfo) {
+            console.log('got defaults 4', info);
         }
+        return info;
     } catch (error) {
         console.log('attempt 4', error)
     }
 
-
-
     console.warn('Cannot read Google Calendar settings. Using default field order and locale.')
 
     // give up and return a set of default values. If this guess is wrong, the dates won't show correctly
-    return {
-        dtFldOrdr: 'YMD',
-        locale: 'en'
-    }
+    return defaultAnswer;
 
     // other settings: 
     // 'dtFldOrdr','DMY'
@@ -848,10 +903,10 @@ function byFieldOrderInSettings(mdy, dmy, ymd) {
 function startAddingBadiInfo() {
     // added = false;
     chrome.runtime.sendMessage(parentExtId, {
-            cmd: 'getStorage',
-            key: 'enableGCal',
-            defaultValue: true
-        },
+        cmd: 'getStorage',
+        key: 'enableGCal',
+        defaultValue: true
+    },
         function (info) {
             if (info && info.value) {
                 // console.log('parent extension found');
@@ -864,74 +919,79 @@ function startAddingBadiInfo() {
                 prepareFormats();
                 // runParseTests();
 
-                // month
-                // PRE OCT 2017
-                addBadiTrigger('#mvEventContainer', function (el) {
-                    var numWeeks = $('#mvEventContainer .month-row').length;
-                    var numWordsInButton = $('.button-strip .goog-imageless-button-checked').text().split(' ');
-                    // no easy way to be sure we are in Month view, not a custom view!
-                    if (numWeeks < 4 || numWordsInButton > 1) {
-                        addBadiInfo(el, 'multiweek');
-                    } else {
-                        addBadiInfo(el, 'month');
+                function triggerByBtn(el, btn) {
+                    var selectBtnView = btn.data('active-view');
+                    switch (selectBtnView) {
+                        case 'day':
+                            addBadiInfo(el, 'dayV2');
+                            break;
+                        case 'week':
+                            addBadiInfo(el, 'multiweekV2');
+                            break;
+                        case 'month':
+                            addBadiInfo(el, 'monthV2');
+                            break;
+                        case 'year':
+                            // don't do anything for now
+                            break;
+                        case 'agenda':
+                            addBadiInfo(el, 'list');
+                            break;
+                        case 'custom_weeks':
+                            addBadiInfo(el, 'multiweekV2');
+                            break;
+                        default:
+                            console.warn('unexpected format', selectBtnView);
+                            break;
                     }
-                });
+                }
 
-                // OCT 2017 - V2
+                // addBadiTrigger('.XyKLOd', function (el) {
+                //     triggerByBtn(el, $(el));
+                // });
+
+                // // month
+                // // PRE OCT 2017
+                // addBadiTrigger('#mvEventContainer', function (el) {
+                //     var numWeeks = $('#mvEventContainer .month-row').length;
+                //     var numWordsInButton = $('.button-strip .goog-imageless-button-checked').text().split(' ');
+                //     // no easy way to be sure we are in Month view, not a custom view!
+                //     if (numWeeks < 4 || numWordsInButton > 1) {
+                //         addBadiInfo(el, 'multiweek');
+                //     } else {
+                //         addBadiInfo(el, 'month');
+                //     }
+                // });
+
+                // // OCT 2017 - V2
                 addBadiTrigger(calClass.triggerElement, function (el) {
+                    triggerByBtn(el, $('.XyKLOd'));
 
-                    // console.log(`Sorry: Wondrous Calendar dates are not no longer available in the "New Design" (Oct 2017) of Google Calendar.`);
-                    // return;
-                    // console.log('badi triggered');
+                    // // console.log(`Sorry: Wondrous Calendar dates are not no longer available in the "New Design" (Oct 2017) of Google Calendar.`);
+                    // // return;
+                    // // console.log('badi triggered');
 
-                    // debugger;
-                    var numWeeks = $(calClass.week).length;
-                    var numWordsInButton = $('.NlWrkb').text().split(' ').length;
-                    if (numWeeks < 4 || numWordsInButton > 1) {
-                        addBadiInfo(el, 'multiweekV2');
-                    } else {
-                        addBadiInfo(el, 'monthV2');
-                    }
+                    // // debugger;
+                    // var numWeeks = $(calClass.week).length;
+                    // var numWordsInButton = $('.NlWrkb').text().split(' ').length;
+                    // if (numWeeks < 4 || numWordsInButton > 1) {
+                    //     addBadiInfo(el, 'multiweekV2');
+                    // } else {
+                    //     addBadiInfo(el, 'monthV2');
+                    // }
                 });
 
-                addBadiTrigger('.Uit9Se', function (el) {
-                    addBadiInfo(el, 'multiweekV2');
-                }); // week, custom
 
-                // addBadiTrigger('.Uit9Se', function(el) {
-                //     addBadiInfo(el, 'dayV2');
+
+                // addBadiTrigger('.wk-weektop', function (el) {
+                //     addBadiInfo(el, $(el).hasClass('wk-full-mode') ? 'week' : 'day');
                 // }); // week, custom
-
-
-                addBadiTrigger('.wk-weektop', function (el) {
-                    addBadiInfo(el, $(el).hasClass('wk-full-mode') ? 'week' : 'day');
-                }); // week, custom
-                addBadiTrigger('#lv_listview', function (el) {
-                    addBadiInfo(el, 'list');
-                }); // agenda
+                // addBadiTrigger('#lv_listview', function (el) {
+                //     addBadiInfo(el, 'list');
+                // }); // agenda
                 addBadiTrigger('.neb-date', function (el) {
                     addBadiInfo(el, 'popup');
                 }); // popup
-                // addBadiTrigger('.datetime-container', function(el) {
-                //     addBadiInfo(el, 'popup');
-                // }); // popup new event
-
-
-
-
-
-
-                // addBadiTrigger('.ep-dpc', addBadiInfo); // edit page
-                //
-                // -- can't find an event to know when the input has been changed!
-                //
-                // $('body').on('change', '.dr-date', addBadiInfo); // edit page
-                // $('body').on('change', '.dr-time', addBadiInfo); // edit page
-
-                //$(document).on('change', ', .dr-time', function () {
-                //  console.log('dr changed');
-                //  fillCalendar($('.ep-dpc')[0]);
-                //});
 
                 console.log(getMessage('confirmationMsg').filledWith(getMessage('title')) +
                     ` (version ${chrome.runtime.getManifest().version})` +
@@ -968,6 +1028,7 @@ $(document).on('change', '#dtFldOrdr', function () {
 function prepareFormats() {
     _allFormats = [
         'MMM D YYYY',
+        'MMMM D YYYY',
         'MMMM YYYY',
         'MMM D - - - YYYY',
         'MMM D YYYY - - - -',
@@ -1009,8 +1070,8 @@ function findParentExtension() {
         tested++;
 
         chrome.runtime.sendMessage(testId, {
-                cmd: 'connect'
-            },
+            cmd: 'connect'
+        },
             function (info) {
                 var msg = chrome.runtime.lastError;
                 if (msg) {
@@ -1049,7 +1110,9 @@ function showErrors() {
 function checkBadiTriggers(mutationsList, observer, doNow, a, b) {
     clearTimeout(startBadiTimer);
 
-    // console.log('checking badi triggers', badiTriggers.length, doNow, a, b);
+    if (showDebugInfo > 1) {
+        console.log('checking badi triggers', doNow, badiTriggers.length, mutationsList?.length);
+    }
 
     if (mutationsList) {
         for (var mutation of mutationsList) {
@@ -1059,35 +1122,40 @@ function checkBadiTriggers(mutationsList, observer, doNow, a, b) {
             //     mutation.target.classList.value,
             //     mutation.target.innerHTML.substring(0, 20)
             // );
-            if (mutation.target.childElementCount === 0 && ',zYZlv,cKWEWe'.indexOf(mutation.target.classList.value) > 0) {
-                // debugger;
-                console.log('trigger again 1')
-                clearTimeout(startBadiTimer);
-                startBadiTimer = setTimeout(function () {
-                    addBadiInfo();
-                }, 100);
-            }
-            if (mutation.target.childElementCount === 0 && mutation.target.classList.value.indexOf('RKLVef') !== -1) {
-                // debugger;
-                console.log('trigger again 2')
-                clearTimeout(startBadiTimer);
-                startBadiTimer = setTimeout(function () {
-                    addBadiInfo();
-                }, 100);
-            }
-            if (mutation.target.childElementCount === 1 && ',zYZlv,SU7tYb,'.indexOf(mutation.target.classList.value.split(' ')[0]) > 0) {
-                // debugger;
-                // console.log('trigger again 3')
-                clearTimeout(startBadiTimer);
-                startBadiTimer = setTimeout(function () {
-                    addBadiInfo();
-                }, 100);
+            switch (mutation.target.childElementCount) {
+                case 0:
+                    if (',zYZlv,cKWEWe'.indexOf(mutation.target.classList.value) > 0) {
+                        if (showDebugInfo > 1) console.log('trigger again 1')
+                        clearTimeout(startBadiTimer);
+                        startBadiTimer = setTimeout(function () {
+                            addBadiInfo();
+                        }, 100);
+                    }
+                    if (mutation.target.classList.value.indexOf('RKLVef') !== -1) {
+                        if (showDebugInfo > 1) console.log('trigger again 2')
+                        clearTimeout(startBadiTimer);
+                        startBadiTimer = setTimeout(function () {
+                            addBadiInfo();
+                        }, 100);
+                    }
+                    break;
+                case 1:
+                    if (',zYZlv,SU7tYb,'.indexOf(mutation.target.classList.value.split(' ')[0]) > 0) {
+                        if (showDebugInfo > 1) console.log('trigger again 3')
+                        clearTimeout(startBadiTimer);
+                        startBadiTimer = setTimeout(function () {
+                            addBadiInfo();
+                        }, 100);
+                    }
+                    break;
             }
         }
     }
 
     if (doNow) {
-        // console.log('checking badi triggers now', badiTriggers.length);
+        if (showDebugInfo > 1) {
+            console.log('checking badi triggers now', badiTriggers.length);
+        }
         // Check the DOM for elements matching a stored selector
         for (var i = 0, len = badiTriggers.length, badiTrigger, elements; i < len; i++) {
             badiTrigger = badiTriggers[i];
@@ -1095,25 +1163,36 @@ function checkBadiTriggers(mutationsList, observer, doNow, a, b) {
             elements = window.document.querySelectorAll(badiTrigger.selector);
             for (var j = 0, jLen = elements.length, element; j < jLen; j++) {
                 element = elements[j];
+                let el = $(element);
                 // Make sure the callback isn't invoked with the 
                 // same element more than once
-                if (!element.badiLoaded) {
+                // console.log('trigger?', element);
+                if (!el.data('badiLoaded')) {
                     // console.log('BADI update', badiTrigger.selector);
-                    element.badiLoaded = true;
+                    el.data('badiLoaded', true);
+
                     // Invoke the callback with the element
+                    if (showDebugInfo) {
+                        console.log('-----------------------------------------');
+                        console.log('trigger:', element);
+                    }
                     badiTrigger.fn.call(element, element);
+                    return;
                 }
             }
         }
     } else {
         startBadiTimer = setTimeout(function () {
             checkBadiTriggers(null, null, true);
-        }, 500); // wait screen to settle first
+        }, 500); // wait screen to settle first       
     }
 }
 
 function addBadiTrigger(selector, fn) {
     // Store the selector and callback to be monitored
+    if (showDebugInfo) {
+        console.log('add trigger', selector);
+    }
     badiTriggers.push({
         selector: selector,
         fn: fn
